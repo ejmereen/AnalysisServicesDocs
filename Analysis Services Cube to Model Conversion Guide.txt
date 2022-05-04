@@ -1,0 +1,50 @@
+Author: Eric Mereen
+Created Date: 5/4/2022
+Updated Date: 5/4/2022
+
+Cube to Model Conversion Guide:
+
+If you are looking to convert your Multidimensional Cube to a Tabular Model, this guide will help you get there. There is currently no tool to convert Cubes to Models. We need to do it systematically in order to ensure we have the right parts of the design.
+
+Getting Started:
+You need at minimum the XMLA script of the MD Database/Cube. You can have this opened in Notepad so we can take a look at the design. You could alternatively have Visual Studio opened twice once with your MD Project and once with your new Tabular Project.
+
+First Step - Data Source:
+1.) Get your data source information and credential. Tabular doesn't use a Data Source View, so we can ignore this. At minimum we need the server endpoint and credential.
+2.) Once you have the data source and credential, you can add this to the Tabular model by right-clicking on the data sources folder and selecting New Data Source, we don't want to import any tables yet, just add the data source.
+
+** If you are building a Tabular 1400+ compatability level project legacy data sources are disabled by default, you can enable them by going to Tools -> Options -> Analysis Services Tabular -> Check the box that says Enable legacy data sources. **
+
+3.) Once you have added in the data source in the project you are done with this step.
+
+Second Step - Importing the Dimensions/Tables:
+1.) You can check either your Data Source View of look at the list of the Dimensions in the Cube Project. Make a list of all the dimensions and the columns you need from them.
+2.) Once you have a list made of the dimensions and columns you can them proceed to import them into the Tabular Project by right-clicking on the data source we added in the first step and select Import New Tables.
+3.) When the Import Table Windows shows up, re-enter the credentials if prompted and then use the Navigator window to click on each table you need to add from the list you made by clicking on the check box. There is an option to "Select Related Tables" at the bottom you don't need to do this if you know the tables you need. Once you have the tables loaded you can then click on the Load button to load the entire table or click on Transform Data if you want to remove any columns that are not needed in the tables.
+4.) Once you have the tables imported into the project it will automatically create relationships where it thinks they should go, it will match up columns with the same names in other tables. You need to verify the relationship joines to make sure they match what is in the Cube project. The quickiest way to confirm this is to expand the Relationships folder and make sure it's the same as what is in the Cube Project.
+5.) Please make any necessary changes to the relationship joins such as the cardinality or change the columns accordingly.
+
+Third Step - Build Hierarchies:
+Doc: https://docs.microsoft.com/en-us/analysis-services/tabular-models/create-and-manage-hierarchies-ssas-tabular?view=asallproducts-allversions
+1.) So far we have, added the data source, imported tables, and confirmed the relationships. Next we need to confirm that the hierachies are built to match what is in the Cube Project. Get a list of the hierarchies and take note of the column order.
+2.) Change the project to Diagram View, this looks like two tables with a line connecting them, it's next to the grid view icon. In Diagram View right click on the table name and select Create Hiearchy. Then build the hierarchy as set in the Cube project.
+
+Fourth Step - Build Partitions:
+1.) We need to get another list of the measure group partitions and also keep the query as well so you know what filters need to be applied.
+2.) Once you have the list in the Tabular Project expand the Tables folder and right-click on the table you want to add partitions to and select Partitions. From here you can copy the partiton, rename the partition, or add new partitions. If your data source was updated and using M, you won't see a native query. If you want to apply a filter on this partition click on the Design... button and apply the filter in the next window, use the same time filter you have in the Cube project.
+3.) Apply the needed partitions to all the tables from the Cube project.
+
+Fifth Step Measures/Calculations:
+1.) Now we have a majority of the Cube into the Tabular Project what is left is any measures, calculated columns/tables, and calulcation groups.
+2.) Measures need to be written in DAX so they can't move over from the Cube project, you can read about mesaures here: https://docs.microsoft.com/en-us/analysis-services/tabular-models/measures-ssas-tabular?view=asallproducts-allversions
+3.) Calc columns, tables, and groups, use DAX code, so they can't be moved over from the Cube project. you can read more about each item using the below documentation.
+
+Calculation Columns: https://docs.microsoft.com/en-us/analysis-services/tabular-models/ssas-calculated-columns?view=asallproducts-allversions
+
+Calulation Tables: https://docs.microsoft.com/en-us/analysis-services/tabular-models/create-a-calculated-table-ssas-tabular?view=asallproducts-allversions
+
+Calculation Groups:https://docs.microsoft.com/en-us/analysis-services/tabular-models/calculation-groups?view=asallproducts-allversions
+
+Summary:
+This is a quick and general overview of how to convert a Multidimensional Cube to a Tabular Model. This not an easy process but should be straight forward once you break down the project into pieces. This information is accurate as of the update date listed at the top of this doc.
+
